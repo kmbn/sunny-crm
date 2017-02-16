@@ -23,11 +23,11 @@ def main_view():
         today = datetime.utcnow().date()
         db = get_db()
         # Get agenda
-        cur = db.execute('select contacts.name, contacts.id, \
+        cur = db.execute('select contacts.name, contacts.cid, \
             contacts.next_action, updates.id from contacts \
             join updates on contacts.id = updates.contact_id \
             where contacts.creator_id = ? and contacts.next_checkin <= ? \
-            group by contacts.id order by updates.id asc', \
+            group by contacts.cid order by updates.id asc', \
             (current_user, today))
         agenda = cur.fetchall()
         # Get progress report
@@ -41,10 +41,10 @@ def main_view():
             new_updates = new_updates[0] - new_contacts[0]
         # Get last five updates
         cur = db.execute('select updates.description, updates.created_on, \
-            contacts.name, contacts.id from updates \
+            contacts.name, contacts.cid, updates.id from updates \
             join contacts on updates.contact_id = contacts.id \
             where updates.creator_id = ? \
-            order by updates.created_on desc limit 5', (current_user,))
+            order by updates.id desc limit 5', (current_user,))
         updates = cur.fetchall()
         # Get next five checkins
         cur = db.execute('select name, next_checkin, id from contacts \
@@ -75,7 +75,7 @@ def main_view():
         new_contacts=new_contacts)
 
 
-@app.route('/search_results', methods=['GET', 'POST'])
+@app.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
     current_user = session.get('current_user')
@@ -84,16 +84,16 @@ def search():
         query = quick_nav.query.data
         db = get_db()
         query = '%' + quick_nav.query.data + '%'
-        cur = db.execute('select id, name from contacts \
+        cur = db.execute('select cid, name from contacts \
             where name like ? and creator_id = ? order by name asc', \
             (query, current_user))
         results = cur.fetchall()
         if len(results) == 1:
             return redirect(url_for('view_contact', contact_id=results[0][0]))
         else:
-            return render_template('search_results.html', results=results, \
+            return render_template('search.html', results=results, \
                 query=quick_nav.query.data, quick_nav=quick_nav)
-    return render_template('search_results.html', quick_nav=quick_nav)
+    return render_template('search.html', quick_nav=quick_nav)
 
 
 @app.route('/autocomplete', methods=['GET', 'POST'])
@@ -116,9 +116,9 @@ def view_update_stream():
     current_user = session.get('current_user')
     db = get_db()
     cur = db.execute('select updates.description, updates.created_on, \
-        contacts.name, contacts.id from updates \
+        contacts.name, contacts.cid, updates.id from updates \
         join contacts on updates.contact_id = contacts.id \
-        where updates.creator_id = ? order by updates.created_on desc', \
+        where updates.creator_id = ? order by updates.id desc', \
         (current_user,))
     updates = cur.fetchall()
     return render_template('updates.html', updates=updates)
@@ -129,7 +129,7 @@ def view_update_stream():
 def view_all_contacts():
     current_user = session.get('current_user')
     db = get_db()
-    cur = db.execute('select name, last_checkin, next_checkin, id \
+    cur = db.execute('select name, last_checkin, next_checkin, cid \
         from contacts where creator_id = ? order by name asc', \
         (current_user,))
     contacts = cur.fetchall()
@@ -141,7 +141,7 @@ def view_all_contacts():
 def view_next_checkins(): # Should support display of most recent update as well.
     current_user = session.get('current_user')
     db = get_db()
-    cur = db.execute('select id, name, next_checkin, next_action \
+    cur = db.execute('select cid, name, next_checkin, next_action \
         from contacts where creator_id = ? order by next_checkin asc', \
         (current_user,))
     checkins = cur.fetchall()
@@ -154,7 +154,7 @@ def view_contact(contact_id): # Contact ID is currently derived from the primary
     current_user=session.get('current_user')
     db = get_db()
     cur = db.execute('select name, note, last_checkin, next_checkin, \
-        next_action from contacts where creator_id = ? and id = ?', \
+        next_action, id from contacts where creator_id = ? and cid = ?', \
         (current_user, contact_id))
     contact = cur.fetchone()
     if not contact:
@@ -173,10 +173,10 @@ def view_contact(contact_id): # Contact ID is currently derived from the primary
         db.execute('insert into updates (description, created_on, \
             contact_id, creator_id) values (?, ?, ?, ?)', \
             (update_form.update_text.data, datetime.utcnow().date(), \
-                contact_id, current_user))
+                contact[4], current_user))
         last_checkin = datetime.utcnow().date()
         db.execute('update contacts set last_checkin = ?, next_checkin = ?, \
-            next_action = ? where creator_id = ? and id = ?', \
+            next_action = ? where creator_id = ? and cid = ?', \
             (last_checkin, next_checkin, next_action, current_user, \
                 contact_id))
         db.commit()
@@ -195,7 +195,7 @@ def edit_contact(contact_id): # Contact ID is currently derived from the primary
     current_user=session.get('current_user')
     db = get_db()
     cur = db.execute('select name, note, last_checkin, next_checkin, \
-        next_action from contacts where creator_id = ? and id = ?', \
+        next_action from contacts where creator_id = ? and cid = ?', \
         (current_user, contact_id))
     contact = cur.fetchone()
     if not contact:
@@ -212,7 +212,7 @@ def edit_contact(contact_id): # Contact ID is currently derived from the primary
             new_next_action = 'Touch base'
         db.execute('update contacts set name = ?, note = ?, \
             next_checkin = ?, next_action = ? where creator_id = ? and \
-            id = ?', (form.new_name.data, form.new_note.data, \
+            cid = ?', (form.new_name.data, form.new_note.data, \
                 new_checkin, new_next_action, \
                 current_user, contact_id))
         db.commit()
@@ -228,12 +228,12 @@ def delete_contact(contact_id):
     current_user=session.get('current_user')
     db = get_db()
     cur = db.execute('select name, note, last_checkin, next_checkin, \
-        next_action from contacts where creator_id = ? and id = ?', \
+        next_action from contacts where creator_id = ? and cid = ?', \
         (current_user, contact_id))
     contact = cur.fetchone()
     if not contact:
         abort(404)
-    db.execute('delete from contacts where creator_id = ? and id = ?', \
+    db.execute('delete from contacts where creator_id = ? and cid = ?', \
         (current_user, contact_id))
     db.execute('delete from updates where creator_id = ? \
         and contact_id = ?', (current_user, contact_id))
@@ -257,14 +257,25 @@ def add_contact():
             next_action = 'Touch base'
         next_checkin = parse_checkin(form.checkin.data)
         db = get_db()
-        db.execute('insert into contacts (name, note, next_checkin, \
-            next_action, created_on, creator_id) values (?, ?, ?, ?, ?, ?)', \
-            (name, note, next_checkin, next_action, current_date, \
-                current_user))
+        # Get highest cid or start from 1
+        # The cid serves as the externally visible contact id
+        # and starts from 1 each user.
+        cur = db.execute('select max(cid) from contacts \
+            where creator_id = ?', (current_user,))
+        highest_cid = cur.fetchone()
+        if highest_cid[0] == None:
+            cid = 1
+        else:
+            cid = highest_cid[0] + 1
+        db.execute('insert into contacts (cid, name, note, next_checkin, \
+            next_action, created_on, creator_id) \
+            values (?, ?, ?, ?, ?, ?, ?)', \
+            (cid, name, note, next_checkin, next_action, current_date, \
+            current_user))
         db.commit()
-        cur = db.execute('select id from contacts where name = ? \
+        cur = db.execute('select id from contacts where cid = ? \
             and next_checkin = ? and creator_id = ?', \
-            (name, next_checkin, current_user))
+            (cid, next_checkin, current_user))
         contact = cur.fetchone()
         contact_id = contact[0]
         db.execute('insert into updates (description, created_on, \

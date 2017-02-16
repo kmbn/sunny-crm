@@ -2,20 +2,23 @@
 {% block page_content %}
 
 <div class="page-header">
-    <h1>Results for "{{ query }}"</h1>
+    <h1>Search</h1>
 </div>
 
-<div>
-{% if results|length == 0 %}
-    <p>There were no results for "{{ query }}".</p>
-{% else %}
-    <ol>
-    {% for result in results %}
-        <li><p><a href="{{ url_for('view_contact', contact_id=result.id, _external=True) }}">{{ result.name }}</a></p></li>
-    {% endfor %}
-    </ol>
+{% if query %}
+    <div class="dashboard-block">
+        {% if results|length == 0 %}
+            <h2>There were no results for "{{ query }}".</h2>
+        {% else %}
+            <h2>Results for "{{ query }}".</h2>
+            <ol>
+            {% for result in results %}
+                <li><p><a href="{{ url_for('view_contact', contact_id=result.id, _external=True) }}">{{ result.name }}</a></p></li>
+            {% endfor %}
+            </ol>
+        {% endif %}
+    </div>
 {% endif %}
-</div>
 
 <div class="form">
     <form action="{{ url_for('search') }}" method="post">
