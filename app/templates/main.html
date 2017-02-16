@@ -6,23 +6,25 @@
 </div>
 
 <div class="dashboard-block">
-{% if agenda|length != 0 %}
-    <h2>Your agenda for today: <span class="h2-link"><a href="{{ url_for('view_next_checkins') }}">[view upcoming tasks]</a></span></h2>
+    <h2>Your agenda for today:
+        {% if updates|length != 0 %}
+        <span class="h2-link"><a href="{{ url_for('view_next_checkins') }}">[view upcoming tasks]</a></span>
+        {% endif %}</h2>
+    {% if agenda|length != 0 %}
     <ol>
         {% for item in agenda %}
             <li><p><a href="{{ url_for('view_contact', contact_id=item[1], _external=True) }}">{{ item[0] }}</a>: {{ item[2] }}</p></li>
         {% endfor %}
     </ol>
-{% else %}
-    {% if updates|length != 0 %}
-        <h2>Nothing on your agenda today. <span class="h2-link"><a href="{{ url_for('view_next_checkins') }}">[view upcoming tasks]</a></span></h2>
     {% else %}
-        <h2>Your agenda for today: </h2>
-        <ol>
-            <li><p>Add your first contact <a href="{{ url_for('add_contact') }}">here</a></p></li>
-        </ol>
+        {% if updates|length != 0 %}
+            <p>Nothing right now.</p>
+        {% else %}
+            <ol>
+                <li><p>Add your first contact <a href="{{ url_for('add_contact') }}">here</a></p></li>
+            </ol>
+        {% endif %}
     {% endif %}
-{% endif %}
 </div>
 
 <div class="dashboard-block">

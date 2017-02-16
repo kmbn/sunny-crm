@@ -17,7 +17,11 @@
             <a href="#0" class="cd-popup-close img-replace">Close</a>
         </div> <!-- cd-popup-container -->
     </div> <!-- cd-popup --></h2>
-    <p>{{ contact[1] }}</p>
+    {% if contact[1]|length != 0 %}
+        <p>{{ contact[1] }}</p>
+    {% else %}
+        <p>No note.</p>
+    {% endif %}
 </div>
 
 <div class="dashboard-block">

@@ -161,7 +161,7 @@ def view_contact(contact_id): # Contact ID is currently derived from the primary
         abort(404)
     cur = db.execute('select description, created_on, id from updates \
         where creator_id = ? and contact_id = ? order by id desc', \
-        (current_user, contact_id))
+        (current_user, contact[5]))
     updates = cur.fetchall()
     update_form = AddUpdateForm()
     if update_form.validate_on_submit():
