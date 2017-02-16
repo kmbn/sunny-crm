@@ -94,8 +94,7 @@ def register():
         user_id = row[0]
         session['current_user'] = user_id
         token = generate_confirmation_token(user_id)
-        send_email(email, 'Thanks for registering—\
-            please confirm your email',
+        send_email(email, 'Thanks for registering—please confirm your email',
                        'email/confirm', token=token)
         flash(Markup('You have been registered and are now logged in. \
             </br>A confirmation has been sent to your email address.'))
@@ -181,10 +180,11 @@ def confirm_new_email(token):
             (new_email, user_id))
         db.commit()
         if session.get('logged_in') == True:
-            flash('New email address "new_email" confirmed—thank you!')
+            flash('New email address %s confirmed—thank you!' % (new_email))
             return redirect(url_for('main_view'))
         else:
-            flash('New email address confirmed—you can now use it to log in!')
+            flash('New email address %s confirmed—\
+                you can now use it to log in!' % (new_email))
             return redirect(url_for('login'))
 
 
