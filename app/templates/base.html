@@ -7,7 +7,7 @@
       href="{{ url_for('static', filename='custom.css') }}">
 {% endblock %}
 
-{% block title %}Muffin{% endblock %}
+{% block title %}Sunny{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -30,7 +30,7 @@ type="image/x-icon">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url_for('main_view')}}">Muffin</a>
+            <a class="navbar-brand" href="{{ url_for('main_view')}}">Sunny</a>
         </div>
         <div class="navbar-collapse collapse">
             {% if session.logged_in %}
@@ -79,7 +79,7 @@ type="image/x-icon">
     <div class="modal-footer">
         <div class="container container-content">
             <ul class="nav navbar-nav navbar-right navbar-footer">
-                <li>&#169; 2017 Muffin CRM</li>
+                <li>&#169; 2017 Sunny CRM</li>
             </ul>
         </div>
     </div>
