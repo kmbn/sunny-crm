@@ -62,7 +62,7 @@ class AddContactForm(Form):
 
 class QuickNavForm(Form):
     query = StringField('Search for a contact:', validators=[Required()])
-    submit = SubmitField('Go')
+    submit = SubmitField('Search')
 
 
 class AddUpdateForm(Form):

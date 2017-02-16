@@ -99,11 +99,14 @@ body {
     color: #383636;
     font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
 }
-.modal-footer { margin-top: 50px;
-                  border: none; }
+.modal-footer {
+    margin-top: 50px;
+    border: none;
+}
 
-.alert-info { font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif; }
-
+.alert-info {
+    font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif;
+}
 
 /* Set width of main content on desktop */
 @media (min-width: 992px) {.container-content { width: 750px;} }
@@ -267,22 +270,7 @@ xpopup
 
 /* Minimal autocomplete styling */
 
-input {
-    border:1px solid #cccccc;
-    border-radius: 3px 3px 3px 3px;
-    width: 370px;
-    padding: 9px 9px 9px 9px;
-    margin: 3px 0px 3px 3px;
-    color: #e1e1e1;
-}
 
-input:focus {
-    border-color:#00cc33;
-    box-shadow:0 0 10px #d5d5d9;
-    -webkit-box-shadow:outset 0 1px 9px #d5d5d9;
-    -moz-box-shadow:outset 0 1px 9px #d5d5d9;
-    color:  #676767;
-}
 
 /* min Jquery CSS elements for autocomplete */
 .ui-autocomplete{
@@ -304,12 +292,12 @@ input:focus {
 }
 .ui-menu .ui-menu-item {
     margin:0;
-    padding: 0;
+    padding: 4px 7px;
     zoom: 1;
     float: left;
     clear: left;
     width: 100%;
-    font-family:arial;
+    font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif;
 }
 .ui-menu .ui-menu-item a {
     text-decoration:none;
@@ -320,4 +308,8 @@ input:focus {
 }
 .ui-menu .ui-menu-item a.ui-state-hover, .ui-menu .ui-menu-item a.ui-state-active {
     font-weight: bold;
+}
+/* Prevent helper text from being displayed */
+.ui-helper-hidden-accessible {
+    visibility: hidden;
 }
