@@ -17,6 +17,8 @@ type="image/x-icon">
 type="image/x-icon">
 {% endblock %}
 
+{% block body %}
+<div id="wrapper">
 
 {% block navbar %}
 <div class="navbar navbar-inverse" role="navigation">
@@ -56,6 +58,7 @@ type="image/x-icon">
 {% endblock %}
 
 {% block content %}
+<div id="content">
     <div class="container container-content">
     {% for message in get_flashed_messages() %}
         <div class="alert alert-info alert-fadeable">
@@ -68,8 +71,11 @@ type="image/x-icon">
     <div class="container container-content">
         {% block page_content %}{% endblock %}
     </div>
+</div>
+{% endblock %}
 
-    {% block footer %}
+{% block footer %}
+<div id="footer">
     <div class="modal-footer">
         <div class="container container-content">
             <ul class="nav navbar-nav navbar-right navbar-footer">
@@ -77,11 +83,13 @@ type="image/x-icon">
             </ul>
         </div>
     </div>
-    {% endblock %}
+</div>
 {% endblock %}
-
+</div>
 {% block scripts%}
     {{super()}}
     <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js" ></script>
     <script src="{{ url_for('static', filename='custom.js') }}"></script>
+{% endblock %}
+
 {% endblock %}

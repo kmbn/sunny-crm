@@ -1,3 +1,68 @@
+/*------------------------------------------------------------------------*/
+/* Make footer appear at bottom of screen if there's not a lot of content */
+html,
+body {
+    margin:0;
+    padding:0;
+    height:100%;
+}
+#wrapper {
+    min-height:100%;
+    position:relative;
+}
+#header {
+    padding:10px;
+}
+#content {
+    padding-bottom:100px; /* Height of the footer element */
+}
+#footer {
+    width:100%;
+    height:100px;
+    position:absolute;
+    bottom:0;
+    left:0;
+}
+
+/*------------------------------------------------*/
+/* Change the point at which the navbar collapses */
+@media (max-width: 995px) {
+  .navbar-header {
+      float: none;
+  }
+  .navbar-left,.navbar-right {
+      float: none !important;
+  }
+  .navbar-toggle {
+      display: block;
+  }
+  .navbar-collapse {
+      border-top: 1px solid transparent;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  .navbar-fixed-top {
+      top: 0;
+      border-width: 0 0 1px;
+  }
+  .navbar-collapse.collapse {
+      display: none!important;
+  }
+  .navbar-nav {
+      float: none!important;
+      margin-top: 7.5px;
+  }
+  .navbar-nav>li {
+      float: none;
+  }
+  .navbar-nav>li>a {
+      padding-top: 10px;
+      padding-bottom: 10px;
+  }
+  .collapse.in{
+      display:block !important;
+  }
+}
+
 h1 {
     font-size: 8rem;
     text-align: center;
@@ -100,7 +165,7 @@ body {
     font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
 }
 .modal-footer {
-    margin-top: 50px;
+    margin-top: 40px;
     border: none;
 }
 
@@ -118,11 +183,8 @@ body {
 .cd-popup-trigger { margin: 6em auto; }
 }
 
-/* --------------------------------
-
-xpopup
-
--------------------------------- */
+/*-----------------------*/
+/* Confirm delete popup */
 .cd-popup {
     position: fixed;
     left: 0;
@@ -267,11 +329,7 @@ xpopup
     white-space: nowrap;
 }
 
-
-/* Minimal autocomplete styling */
-
-
-
+/*------------------------------------------*/
 /* min Jquery CSS elements for autocomplete */
 .ui-autocomplete{
     position: absolute;
