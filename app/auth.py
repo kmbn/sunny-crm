@@ -83,9 +83,10 @@ def register():
         password = form.password.data
         current_time = datetime.utcnow().date()
         password_hash = pwd_context.hash(password)
+        role = 'user'
         db.execute('insert into users (email, password, role, \
             joined_on, status) values (?, ?, ?, ?, ?)', \
-            (email, password_hash, 'User', current_time, 'unconfirmed'))
+            (email, password_hash, role, current_time, 'unconfirmed'))
         db.commit()
         session['logged_in'] = True
         session['status'] = 'unconfirmed'
