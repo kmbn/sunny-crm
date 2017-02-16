@@ -1,0 +1,13 @@
+Dear user,
+
+Welcome to MUFFIN!
+
+To confirm your account please click on the following link:
+
+{{ url_for('confirm', token=token, _external=True) }}
+
+Sincerely,
+
+The MUFFIN Team
+
+Note: replies to this email address are not monitored.

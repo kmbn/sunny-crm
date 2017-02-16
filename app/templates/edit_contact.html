@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<div class="page-header">
+    <h1>{{ contact[0] }}</h1>
+</div>
+
+<div>
+    <h2>Edit contact: <span class="h2-link-right"><a href="{{ url_for('view_contact', contact_id=contact_id) }}">[cancel]</a></span></h2>
+</div>
+
+<div>
+    {{ wtf.quick_form(form) }}
+</div>
+
+{% endblock %}

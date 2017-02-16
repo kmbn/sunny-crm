@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<div class="page-header">
+    <h1>{{ contact[0] }}</h1>
+</div>
+
+<div class="dashboard-block">
+    <h2>Note:     <span class="h2-link-right"><a href="{{ url_for('edit_contact', contact_id=contact_id) }}">[edit contact]</a></span> <span class="h2-link-right"><a href="#0" class="cd-popup-trigger">[delete contact]</a></span>
+    <div class="cd-popup" role="alert">
+        <div class="cd-popup-container">
+            <p>Are you sure you want to delete {{ contact[0] }}? It cannot be undone.</p>
+            <ul class="cd-buttons">
+                <li><a href="{{ url_for('delete_contact', contact_id=contact_id) }}">Delete contact</a></li>
+                <li><a href="#0" class="cd-popup-cancel">Don't delete</a></li>
+            </ul>
+            <a href="#0" class="cd-popup-close img-replace">Close</a>
+        </div> <!-- cd-popup-container -->
+    </div> <!-- cd-popup --></h2>
+    <p>{{ contact[1] }}</p>
+</div>
+
+<div class="dashboard-block">
+    <h2>Next task:</h2>
+    <p><span class="capitalize">{{ contact[3]|friendly_dates }}</span>: {{ contact[4] }}</p>
+</div>
+
+<div class="dashboard-block">
+    <h2>Update:</h2>
+    {{ wtf.quick_form(update_form) }}
+</div>
+
+<div>
+    <h2>History:</h2>
+    <ol>
+    {% for update in updates %}
+        <li><p><span class="capitalize">{{ update[1]|friendly_dates }}</span>: {{ update[0] }}</p></li>
+    {% endfor %}
+    </ol>
+</div>
+
+{% endblock %}

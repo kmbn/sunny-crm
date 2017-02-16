@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<div class="page-header">
+    <h1>Your Account</h1>
+</div>
+
+<div>
+    <h2>Change email address:</h2>
+    <p>Your current email address is {{ email }}.</br>
+    To change your email address click here: <a href="{{ url_for('change_email') }}">[change email]</a></p>
+    <h2>Change password:</h2>
+    <p>To change your password click here: <a href="{{ url_for('change_password') }}">[change password]</a></p>
+    <h2>Delete your acount:</h2>
+    <p>To delete your account click here: <a href="#0" class="cd-popup-trigger">[delete account]</a></p>
+    <div class="cd-popup" role="alert">
+        <div class="cd-popup-container">
+            <p>Are you sure you want to delete your account? It cannot be undone.</p>
+            <ul class="cd-buttons">
+                <li><a href="{{ url_for('delete_account') }}">Delete account</a></li>
+                <li><a href="#0" class="cd-popup-cancel">Don't delete</a></li>
+            </ul>
+            <a href="#0" class="cd-popup-close img-replace">Close</a>
+        </div> <!-- cd-popup-container -->
+    </div> <!-- cd-popup -->
+</div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<div class="page-header">
+    <h1>Agenda</h1>
+</div>
+
+<div>
+{% if checkins|length == 0 %}
+    <h2>You don't have any tasks scheduled.</h2>
+{% else %}
+    <h2>Your upcoming tasks:</h2>
+    <ol>
+    {% for checkin in checkins %}
+      <li>
+          <p><span class="capitalize">{{ checkin.next_checkin|friendly_dates }}</span>: {{ checkin.next_action }} <a href="{{ url_for('view_contact', contact_id=checkin.id, _external=True) }}">({{ checkin.name }})</a></p>
+      </li>
+    {% endfor %}
+    </ol>
+{% endif %}
+</div>
+
+{% endblock %}

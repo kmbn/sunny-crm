@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<div class="page-header">
+    <h1>Results for "{{ query }}"</h1>
+</div>
+
+<div>
+{% if results|length == 0 %}
+    <p>There were no results for "{{ query }}".</p>
+{% else %}
+    <ol>
+    {% for result in results %}
+        <li><p><a href="{{ url_for('view_contact', contact_id=result.id, _external=True) }}">{{ result.name }}</a></p></li>
+    {% endfor %}
+    </ol>
+{% endif %}
+</div>
+
+<div>
+    <form action="{{ url_for('search') }}" method="post">
+        {{ quick_nav.hidden_tag() }}
+        <p>{{ quick_nav.query.label }}</p>
+        <p>{{ quick_nav.query(id="tags", class="ui-autocomplete-input", title="Tags", autocomplete="off") }}</p>
+        {% for error in quick_nav.query.errors %}
+            <p><span style="color: red;">[{{ error }}]</span></p>
+        {% endfor %}
+        <p>{{ quick_nav.submit(class="btn btn-primary") }}</p>
+    </form>
+</div>
+
+{% endblock %}

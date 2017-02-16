@@ -1,0 +1,86 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='custom.css') }}">
+{% endblock %}
+
+{% block title %}Muffin{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" href="{{ url_for('static', filename = 'favicon.ico') }}"
+type="image/x-icon">
+<link rel="icon" href="{{ url_for('static', filename = 'favicon.ico') }}"
+type="image/x-icon">
+{% endblock %}
+
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('main_view')}}">Muffin</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            {% if session.logged_in %}
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('main_view')}}">Dashboard</a></li>
+                    <li><a href="{{ url_for('view_all_contacts')}}">Contacts</a></li>
+                    <li><a href="{{ url_for('view_next_checkins') }}">Agenda</a></li>
+                    <li><a href="{{ url_for('view_update_stream') }}">Updates</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ url_for('add_contact') }}">Add Contact</a></li>
+                    <li><a href="{{ url_for('manage_account') }}">Account</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                </ul>
+            {% else %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('register') }}">Sign up!</a></li>
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="container container-content">
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-info alert-fadeable">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {{ message }}
+        </div>
+    {% endfor %}
+    </div>
+
+    <div class="container container-content">
+        {% block page_content %}{% endblock %}
+    </div>
+
+    {% block footer %}
+    <div class="modal-footer">
+        <div class="container container-content">
+            <ul class="nav navbar-nav navbar-right navbar-footer">
+                <li>&#169; 2017 Muffin CRM</li>
+            </ul>
+        </div>
+    </div>
+    {% endblock %}
+{% endblock %}
+
+{% block scripts%}
+    {{super()}}
+    <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js" ></script>
+    <script src="{{ url_for('static', filename='custom.js') }}"></script>
+{% endblock %}
