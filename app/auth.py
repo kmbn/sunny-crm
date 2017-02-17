@@ -303,27 +303,23 @@ def manage_account():
 @app.route('/account/delete_account')
 @login_required
 def delete_account():
-    if request.referrer != url_for('manage_account'):
-        abort(403)
-    elif request.referrer == url_for('manage_account'):
-        current_user = session.get('current_user')
-        db = get_db()
-        cur = db.execute('select email from users where id = ?', \
-            (current_user,))
-        row = cur.fetchone()
-        email = row[0]
-        db.execute('update users set email = ?, password = ? where id = ?', \
-            (None, None, current_user,))
-        db.execute('update contacts set name = ?, note = ?, \
-            last_checkin = ?, next_checkin = ? where creator_id = ?', \
-            (None, None, None, None, current_user,))
-        db.execute('update updates set description = ? \
-            where creator_id = ?', (None, current_user,))
-        db.commit()
-        session['logged_in'] = False
-        send_email(email, 'Your account has been deleted at your request',
-            'email/account_deleted')
-        flash('Your account has been deleted at your request. \
-            You are now logged out.')
-        return(redirect(url_for('main_view')))
-    return render_template('account.html')
+    current_user = session.get('current_user')
+    db = get_db()
+    cur = db.execute('select email from users where id = ?', \
+        (current_user,))
+    row = cur.fetchone()
+    email = row[0]
+    db.execute('update users set email = ?, password = ? where id = ?', \
+        (None, None, current_user,))
+    db.execute('update contacts set name = ?, note = ?, \
+        last_checkin = ?, next_checkin = ? where creator_id = ?', \
+        (None, None, None, None, current_user,))
+    db.execute('update updates set description = ? \
+        where creator_id = ?', (None, current_user,))
+    db.commit()
+    session['logged_in'] = False
+    send_email(email, 'Your account has been deleted at your request',
+        'email/account_deleted')
+    flash('Your account has been deleted at your request. \
+        You are now logged out.')
+    return(redirect(url_for('main_view')))

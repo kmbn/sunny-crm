@@ -10,9 +10,6 @@ body {
     min-height:100%;
     position:relative;
 }
-#header {
-    padding:10px;
-}
 #content {
     padding-bottom:100px; /* Height of the footer element */
 }
