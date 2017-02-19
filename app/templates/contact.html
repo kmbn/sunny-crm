@@ -6,7 +6,7 @@
 </div>
 
 <div class="dashboard-block">
-    <h2>Note:     <span class="h2-link-right"><a href="{{ url_for('main.edit_contact', contact_id=contact_id) }}">[edit contact]</a></span> <span class="h2-link-right"><a href="#0" class="cd-popup-trigger">[delete contact]</a></span>
+    <h2>Note:<span class="h2-link-right"><a href="{{ url_for('main.edit_contact', contact_id=contact_id) }}">[edit contact]</a> | <a href="#0" class="cd-popup-trigger">[delete contact]</a></span></h2>
     <div class="cd-popup" role="alert">
         <div class="cd-popup-container">
             <p>Are you sure you want to delete {{ contact[0] }}? It cannot be undone.</p>

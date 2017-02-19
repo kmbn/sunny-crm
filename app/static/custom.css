@@ -117,6 +117,7 @@ body {
 }
 .h2-link-right {
     font-size: 1.5rem;
+    float: right;
     text-align: right;
 }
 .navbar-inverse {
