@@ -63,7 +63,7 @@ type="image/x-icon">
     {% for message in get_flashed_messages() %}
         <div class="alert alert-info alert-fadeable">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        {{ message }}
+        <span class="message">{{ message }}</span>
         </div>
     {% endfor %}
     </div>

@@ -106,9 +106,14 @@ body {
 }
 .page-header {
     margin-top: 0px;
+    margin-bottom: 10px;
 }
 .h2-link {
     font-size: 1.5rem;
+}
+.message {
+    font-size: 1.8rem;
+    font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif;
 }
 .h2-link-right {
     font-size: 1.5rem;
