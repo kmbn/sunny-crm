@@ -30,26 +30,26 @@ type="image/x-icon">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url_for('main_view')}}">Sunny</a>
+            <a class="navbar-brand" href="{{ url_for('main.main_view')}}">Sunny</a>
         </div>
         <div class="navbar-collapse collapse">
             {% if session.logged_in %}
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('main_view')}}">Dashboard</a></li>
-                    <li><a href="{{ url_for('view_all_contacts')}}">Contacts</a></li>
-                    <li><a href="{{ url_for('view_next_checkins') }}">Agenda</a></li>
-                    <li><a href="{{ url_for('view_update_stream') }}">Updates</a></li>
-                    <li><a href="{{ url_for('search') }}">Search</a></li>
+                    <li><a href="{{ url_for('main.main_view')}}">Dashboard</a></li>
+                    <li><a href="{{ url_for('main.view_all_contacts')}}">Contacts</a></li>
+                    <li><a href="{{ url_for('main.view_next_checkins') }}">Agenda</a></li>
+                    <li><a href="{{ url_for('main.view_update_stream') }}">Updates</a></li>
+                    <li><a href="{{ url_for('main.search') }}">Search</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{{ url_for('add_contact') }}">Add Contact</a></li>
-                    <li><a href="{{ url_for('manage_account') }}">Account</a></li>
-                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    <li><a href="{{ url_for('main.add_contact') }}">Add Contact</a></li>
+                    <li><a href="{{ url_for('auth.manage_account') }}">Account</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                 </ul>
             {% else %}
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{{ url_for('login') }}">Login</a></li>
-                    <li><a href="{{ url_for('register') }}">Sign up!</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">Sign up!</a></li>
                 </ul>
             {% endif %}
         </div>

@@ -7,12 +7,13 @@ from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from .forms import RegistrationForm, NewEmailForm, LoginForm, \
     ChangePasswordForm, RequestPasswordResetForm, SetNewPasswordForm
-from .parse import *
-from . import app
-from .db import get_db
-from .mail import send_email
-from .main import main_view
-from .decorators import login_required
+from app.parse import *
+from app import app
+from . import auth
+from app.db import get_db
+from app.mail import send_email
+from app.main.views import main_view
+from app.decorators import login_required
 
 
 # Passlib config:
@@ -26,11 +27,11 @@ pwd_context = CryptContext(
     )
 
 
-@app.route('/account/login', methods=['GET', 'POST'])
+@auth.route('account/login', methods=['GET', 'POST'])
 def login():
     if session.get('logged_in') == True:
         flash('You are already logged in')
-        return redirect(url_for('main_view'))
+        return redirect(url_for('main.main_view'))
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -52,29 +53,29 @@ def login():
                     flash(Markup('Please confirm your email address. </br>\
                         Click <a href="%s">here</a> \
                         if you need a new confirmation link.' % \
-                        (url_for('main_view'))))
+                        (url_for('main.main_view'))))
                 return redirect(request.args.get('next') \
-                    or url_for('main_view'))
+                    or url_for('main.main_view'))
             else:
                 flash('The email or password you entered were not found')
-                return redirect(url_for('login'))
+                return redirect(url_for('auth.login'))
         else:
             flash('Sign up for an account first.')
-            return redirect(url_for('register'))
+            return redirect(url_for('auth.register'))
     return render_template('login.html', form=form)
 
 
-@app.route('/account/logout')
+@auth.route('account/logout')
 @login_required
 def logout():
     session.pop('logged_in', None)
     session.pop('current_user', None)
     session.pop('status', None)
     flash('You were logged out')
-    return redirect(url_for('main_view'))
+    return redirect(url_for('auth.main_view'))
 
 
-@app.route('/account/register', methods=['GET', 'POST'])
+@auth.route('account/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -99,7 +100,7 @@ def register():
                        'email/confirm', token=token)
         flash(Markup('You have been registered and are now logged in. \
             </br>A confirmation has been sent to your email address.'))
-        return redirect(url_for('main_view'))
+        return redirect(url_for('main.main_view'))
     return render_template('register.html', form=form)
 
 
@@ -113,7 +114,7 @@ def generate_email_token(user_id, new_email, expiration=3600):
     return s.dumps({'confirm': user_id, 'email': new_email})
 
 
-@app.route('/account/confirm/<token>')
+@auth.route('account/confirm/<token>')
 def confirm(token):
     s = Serializer(app.config['SECRET_KEY'])
     user_id = session.get('current_user')
@@ -121,10 +122,10 @@ def confirm(token):
         data = s.loads(token)
     except:
         flash('The confirmation link is invalid or has expired.')
-        return redirect(url_for('resend_confirmation'))
+        return redirect(url_for('auth.resend_confirmation'))
     if data.get('confirm') != user_id:
         flash('You need to log in to confirm your email address.')
-        return redirect(url_for('login', next=request.url))
+        return redirect(url_for('auth.login', next=request.url))
     elif data.get('confirm') == user_id:
         session['status'] = 'confirmed'
         current_time = datetime.utcnow().date()
@@ -135,20 +136,20 @@ def confirm(token):
         if session.get('logged_in') == True:
             session['status'] = 'confirmed'
             flash('Email confirmed—thank you!')
-            return redirect(url_for('main_view'))
+            return redirect(url_for('main.main_view'))
         else:
             flash('Email confirmed—you can log in now!')
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
 
-@app.route('/account/confirm')
+@auth.route('account/confirm')
 @login_required
 def resend_confirmation():
     user_id = session.get('current_user')
     status = session.get('status')
     if status == 'confirmed':
         flash('You have already confirmed your email address')
-        return redirect(url_for('main_view'))
+        return redirect(url_for('main.main_view'))
     elif status == 'unconfirmed':
         token = generate_confirmation_token(user_id)
         db = get_db()
@@ -158,10 +159,10 @@ def resend_confirmation():
         send_email(email, 'Your new confirmation token',
                    'email/confirm', token=token)
         flash('A new confirmation email has been sent to your address')
-    return redirect(url_for('main_view'))
+    return redirect(url_for('main.main_view'))
 
 
-@app.route('/account/change_email/<token>')
+@auth.route('account/change_email/<token>')
 def confirm_new_email(token):
     s = Serializer(app.config['SECRET_KEY'])
     user_id = session.get('current_user')
@@ -169,11 +170,11 @@ def confirm_new_email(token):
         data = s.loads(token)
     except:
         flash('The confirmation link is invalid or has expired.')
-        return redirect(url_for('change_email'))
+        return redirect(url_for('auth.change_email'))
     if data.get('confirm') != user_id:
         flash('You need to log in with your currently registered email \
             address to confirm your new email address.')
-        return redirect(url_for('login', next=request.url))
+        return redirect(url_for('auth.login', next=request.url))
     elif data.get('confirm') == user_id:
         new_email = data.get('email')
         db = get_db()
@@ -182,14 +183,14 @@ def confirm_new_email(token):
         db.commit()
         if session.get('logged_in') == True:
             flash('New email address %s confirmed—thank you!' % (new_email))
-            return redirect(url_for('main_view'))
+            return redirect(url_for('main.main_view'))
         else:
             flash('New email address %s confirmed—\
                 you can now use it to log in!' % (new_email))
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
 
-@app.route('/account/change_email', methods=['GET', 'POST'])
+@auth.route('account/change_email', methods=['GET', 'POST'])
 @login_required
 def change_email():
     user_id = session.get('current_user')
@@ -205,10 +206,10 @@ def change_email():
             send_email(new_email, 'Confirm your new email address',
                    'email/change_email', token=token)
             flash('A confirmation email has been sent to your address.')
-            return redirect(url_for('main_view'))
+            return redirect(url_for('main.main_view'))
         else:
             flash('That email address is already registered.')
-            return redirect(url_for('change_email'))
+            return redirect(url_for('auth.change_email'))
     db = get_db()
     cur = db.execute('select email from users where id is ?', (user_id,))
     row = cur.fetchone()
@@ -217,7 +218,7 @@ def change_email():
         current_email=current_email)
 
 
-@app.route('/account/change_password', methods=['GET', 'POST'])
+@auth.route('account/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
     user_id = session.get('current_user')
@@ -236,14 +237,14 @@ def change_password():
                 (password_hash, user_id))
             db.commit()
             flash('Password updated')
-            return redirect(url_for('main_view'))
+            return redirect(url_for('main.main_view'))
         else:
             flash('The current password you submitted \
                 did not match the password in the db')
     return render_template('change_password.html', form=form)
 
 
-@app.route('/account/reset_password', methods=['GET', 'POST'])
+@auth.route('account/reset_password', methods=['GET', 'POST'])
 def request_password_reset():
     form = RequestPasswordResetForm()
     if form.validate_on_submit(): # Verify that email is not already in use
@@ -257,24 +258,24 @@ def request_password_reset():
             send_email(email, 'Link to reset your password',
                        'email/reset_password', token=token)
             flash('A link to reset your password has been sent')
-            return redirect(url_for('main_view'))
+            return redirect(url_for('main.main_view'))
         else:
             flash('That email is not registered')
-            return redirect(url_for('request_password_reset'))
+            return redirect(url_for('auth.request_password_reset'))
     return render_template('reset_password.html', form=form)
 
 
-@app.route('/account/reset_password/<token>', methods=['GET', 'POST'])
+@auth.route('account/reset_password/<token>', methods=['GET', 'POST'])
 def confirm_password_reset(token):
     s = Serializer(app.config['SECRET_KEY'])
     try:
         data = s.loads(token)
     except:
         flash('The password reset link is invalid or has expired.')
-        return redirect(url_for('request_password_reset'))
+        return redirect(url_for('auth.request_password_reset'))
     if not data.get('confirm'):
         flash('The password reset link is invalid or has expired.')
-        return redirect(url_for('request_password_reset'))
+        return redirect(url_for('auth.request_password_reset'))
     user_id = data.get('confirm')
     form = SetNewPasswordForm()
     if form.validate_on_submit():
@@ -285,11 +286,11 @@ def confirm_password_reset(token):
             (password_hash, user_id))
         db.commit()
         flash('Password updated—you can now log in.')
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
     return render_template('set_new_password.html', form=form, token=token)
 
 
-@app.route('/account', methods=['GET', 'POST'])
+@auth.route('account', methods=['GET', 'POST'])
 @login_required
 def manage_account():
     current_user = session.get('current_user')
@@ -300,7 +301,7 @@ def manage_account():
     return render_template('account.html', email=email)
 
 
-@app.route('/account/delete_account')
+@auth.route('account/delete_account')
 @login_required
 def delete_account():
     current_user = session.get('current_user')
@@ -322,4 +323,4 @@ def delete_account():
         'email/account_deleted')
     flash('Your account has been deleted at your request. \
         You are now logged out.')
-    return(redirect(url_for('main_view')))
+    return(redirect(url_for('main.main_view')))

@@ -10,6 +10,12 @@ app.config.from_envvar('FLASK_CONFIG_FILE')
 
 bootstrap = Bootstrap(app)
 
-from .main import *
-from .auth import *
-from .errors import *
+# Register blueprints
+from app.auth import auth
+app.register_blueprint(auth, url_prefix='/')
+from app.main import main
+app.register_blueprint(main, url_prefix='/')
+
+from app.main.views import *
+from app.auth.views import *
+from app.main.errors import *

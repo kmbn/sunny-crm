@@ -37,7 +37,7 @@ def parse_checkin(checkin_text):
             datetime.strptime(checkin_text, '%Y-%m-%d')
         except ValueError:
             flash('Invalid input')
-            return redirect(url_for('add_contact'))
+            return redirect(url_for('main.add_contact'))
         next_checkin = checkin_text
         return next_checkin
 

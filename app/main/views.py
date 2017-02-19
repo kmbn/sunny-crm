@@ -4,17 +4,16 @@ from flask import Flask, request, session, redirect, url_for, abort, \
     render_template, flash
 from datetime import datetime
 import json
+from . import main
 from .forms import AddContactForm, AddCheckinForm, AddUpdateForm, \
     QuickNavForm, EditContactNameForm, EditNoteForm, EditCheckinForm, \
     RingTheBellForm, EditContactForm
-from .parse import *
-from . import app
-from .db import get_db
-from .mail import send_email
-from .decorators import login_required
+from app.parse import *
+from app.db import get_db
+from app.decorators import login_required
 
 
-@app.route('/', methods=['GET', 'POST'])
+@main.route('/', methods=['GET', 'POST'])
 def main_view():
     if session.get('logged_in'):
         current_user = session.get('current_user')
@@ -75,7 +74,7 @@ def main_view():
         new_contacts=new_contacts)
 
 
-@app.route('/search', methods=['GET', 'POST'])
+@main.route('search', methods=['GET', 'POST'])
 @login_required
 def search():
     current_user = session.get('current_user')
@@ -89,14 +88,14 @@ def search():
             (query, current_user))
         results = cur.fetchall()
         if len(results) == 1:
-            return redirect(url_for('view_contact', contact_id=results[0][0]))
+            return redirect(url_for('main.view_contact', contact_id=results[0][0]))
         else:
             return render_template('search.html', results=results, \
                 query=quick_nav.query.data, quick_nav=quick_nav)
     return render_template('search.html', quick_nav=quick_nav)
 
 
-@app.route('/autocomplete', methods=['GET', 'POST'])
+@main.route('autocomplete', methods=['GET', 'POST'])
 @login_required
 def autocomplete():
     current_user = session.get('current_user')
@@ -110,7 +109,7 @@ def autocomplete():
     return json.dumps(a_results)
 
 
-@app.route('/updates')
+@main.route('updates')
 @login_required
 def view_update_stream():
     current_user = session.get('current_user')
@@ -124,7 +123,7 @@ def view_update_stream():
     return render_template('updates.html', updates=updates)
 
 
-@app.route('/contacts')
+@main.route('contacts')
 @login_required
 def view_all_contacts():
     current_user = session.get('current_user')
@@ -136,7 +135,7 @@ def view_all_contacts():
     return render_template('contacts.html', contacts=contacts)
 
 
-@app.route('/checkins')
+@main.route('checkins')
 @login_required
 def view_next_checkins(): # Should support display of most recent update as well.
     current_user = session.get('current_user')
@@ -148,7 +147,7 @@ def view_next_checkins(): # Should support display of most recent update as well
     return render_template('checkins.html', checkins=checkins)
 
 
-@app.route('/contacts/<contact_id>', methods=['GET', 'POST'])
+@main.route('contacts/<contact_id>', methods=['GET', 'POST'])
 @login_required
 def view_contact(contact_id): # Contact ID is currently derived from the primary key but it should be changed to something user-specific
     current_user=session.get('current_user')
@@ -181,7 +180,7 @@ def view_contact(contact_id): # Contact ID is currently derived from the primary
                 contact_id))
         db.commit()
         flash('Updated %s.' % (contact[0]))
-        return redirect(url_for('main_view'))
+        return redirect(url_for('main.main_view'))
     else:
         render_template('contact.html', contact=contact, updates=updates, \
             contact_id=contact_id, update_form=update_form)
@@ -189,7 +188,7 @@ def view_contact(contact_id): # Contact ID is currently derived from the primary
         contact_id=contact_id, update_form=update_form)
 
 
-@app.route('/contacts/<contact_id>/edit', methods=['GET', 'POST'])
+@main.route('contacts/<contact_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_contact(contact_id): # Contact ID is currently derived from the primary key but it should be changed to something user-specific
     current_user=session.get('current_user')
@@ -216,13 +215,13 @@ def edit_contact(contact_id): # Contact ID is currently derived from the primary
                 new_checkin, new_next_action, \
                 current_user, contact_id))
         db.commit()
-        return redirect(url_for('view_contact', contact_id=contact_id))
+        return redirect(url_for('main.view_contact', contact_id=contact_id))
     form.process()
     return render_template('edit_contact.html', contact=contact, form=form, \
                 contact_id=contact_id)
 
 
-@app.route('/contacts/<contact_id>/delete', methods=['GET', 'POST'])
+@main.route('contacts/<contact_id>/delete', methods=['GET', 'POST'])
 @login_required
 def delete_contact(contact_id):
     current_user=session.get('current_user')
@@ -239,10 +238,10 @@ def delete_contact(contact_id):
         and contact_id = ?', (current_user, contact_id))
     db.commit()
     flash('%s has been deleted.' % (contact[0]))
-    return redirect(url_for('main_view'))
+    return redirect(url_for('main.main_view'))
 
 
-@app.route('/add_contact', methods=['GET', 'POST'])
+@main.route('add_contact', methods=['GET', 'POST'])
 @login_required
 def add_contact():
     current_user = session.get('current_user')
@@ -283,11 +282,11 @@ def add_contact():
             (update, current_date, contact_id, current_user))
         db.commit()
         flash('Added %s' % (name))
-        return redirect(url_for('main_view'))
+        return redirect(url_for('main.main_view'))
     return render_template('add_contact.html', form=form)
 
 
-@app.route('/ring_the_bell', methods=['GET', 'POST'])
+@main.route('ring_the_bell', methods=['GET', 'POST'])
 @login_required
 def ring_the_bell():
     form = RingTheBellForm()

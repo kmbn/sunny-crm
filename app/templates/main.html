@@ -8,12 +8,12 @@
 <div class="dashboard-block">
     <h2>Your agenda for today:
         {% if updates|length != 0 %}
-        <span class="h2-link"><a href="{{ url_for('view_next_checkins') }}">[view upcoming tasks]</a></span>
+        <span class="h2-link"><a href="{{ url_for('main.view_next_checkins') }}">[view upcoming tasks]</a></span>
         {% endif %}</h2>
     {% if agenda|length != 0 %}
     <ol>
         {% for item in agenda %}
-            <li><p><a href="{{ url_for('view_contact', contact_id=item[1], _external=True) }}">{{ item[0] }}</a>: {{ item[2] }}</p></li>
+            <li><p><a href="{{ url_for('main.view_contact', contact_id=item[1], _external=True) }}">{{ item[0] }}</a>: {{ item[2] }}</p></li>
         {% endfor %}
     </ol>
     {% else %}
@@ -21,7 +21,7 @@
             <p>Nothing right now.</p>
         {% else %}
             <ol>
-                <li><p>Add your first contact <a href="{{ url_for('add_contact') }}">here</a></p></li>
+                <li><p>Add your first contact <a href="{{ url_for('main.add_contact') }}">here</a></p></li>
             </ol>
         {% endif %}
     {% endif %}
@@ -29,29 +29,29 @@
 
 <div class="dashboard-block">
     <h2>Your progress today:</h2>
-    <p>{{ new_contacts[0] }} <a href="{{ url_for('view_all_contacts')}}">contact(s)</a> added and {{ new_updates }} <a href="{{ url_for('view_update_stream')}}">update(s)</a> added.</p>
+    <p>{{ new_contacts[0] }} <a href="{{ url_for('main.view_all_contacts')}}">contact(s)</a> added and {{ new_updates }} <a href="{{ url_for('main.view_update_stream')}}">update(s)</a> added.</p>
 </div>
 
 <div class="dashboard-block">
 {% if updates|length != 0 %}
     {% if updates|length > 1 %}
-        <h2>Your last {{ updates|length }} updates: <span class="h2-link"><a href="{{ url_for('view_update_stream') }}">[view all updates]</a></span></h2>
+        <h2>Your last {{ updates|length }} updates: <span class="h2-link"><a href="{{ url_for('main.view_update_stream') }}">[view all updates]</a></span></h2>
     {% else %}
         <h2>Your last update:</h2>
     {% endif %}
         <ol>
         {% for update in updates %}
-          <li><p><span class="capitalize">{{ update[1]|friendly_dates }}</span>: {{ update[0] }} <a href="{{ url_for('view_contact', contact_id=update[3], _external=True) }}">({{ update[2] }})</a></p></li>
+          <li><p><span class="capitalize">{{ update[1]|friendly_dates }}</span>: {{ update[0] }} <a href="{{ url_for('main.view_contact', contact_id=update[3], _external=True) }}">({{ update[2] }})</a></p></li>
         {% endfor %}
         </ol>
 {% else %}
     <h2>Recent updates:</h2>
-    <p>None yet—<a href="{{ url_for('add_contact') }}">add your first contact</a> to get get started!</p>
+    <p>None yet—<a href="{{ url_for('main.add_contact') }}">add your first contact</a> to get get started!</p>
 {% endif %}
 </div>
 
 <div class="form">
-    <form action="{{ url_for('search') }}" method="post">
+    <form action="{{ url_for('main.search') }}" method="post">
         {{ quick_nav.hidden_tag() }}
         <div class="form-group">
             <span class="control-label">{{ quick_nav.query.label }}</span></br>

@@ -13,7 +13,7 @@
     <ol>
     {% for update in updates %}
         <li>
-            <p><span class="capitalize">{{ update[1]|friendly_dates }}</span>: {{ update[0] }} <a href="{{ url_for('view_contact', contact_id=update[3], _external=True) }}">({{ update[2] }})</a></p>
+            <p><span class="capitalize">{{ update[1]|friendly_dates }}</span>: {{ update[0] }} <a href="{{ url_for('main.view_contact', contact_id=update[3], _external=True) }}">({{ update[2] }})</a></p>
         </li>
     {% endfor %}
     </ol>

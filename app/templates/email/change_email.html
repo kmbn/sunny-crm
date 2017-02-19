@@ -1,7 +1,7 @@
 <p>Dear user,</p>
-<p>To confirm your new email address <a href="{{ url_for('confirm_new_email', token=token, _external=True) }}">click here</a>.</p>
+<p>To confirm your new email address <a href="{{ url_for('auth.confirm_new_email', token=token, _external=True) }}">click here</a>.</p>
 <p>Alternatively, you can paste the following link in your browser's address bar:</p>
-<p><a href="{{ url_for('confirm_new_email', token=token, _external=True) }}">{{ url_for('confirm_new_email', token=token, _external=True) }}</a></p>
+<p><a href="{{ url_for('auth.confirm_new_email', token=token, _external=True) }}">{{ url_for('auth.confirm_new_email', token=token, _external=True) }}</a></p>
 <p>Sincerely,</p>
 <p>The Sunny CRM Team</p>
 <p><small>Note: replies to this email address are not monitored.</small></p>
