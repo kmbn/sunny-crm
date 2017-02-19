@@ -16,17 +16,6 @@ from app.main.views import main_view
 from app.decorators import login_required
 
 
-# Passlib config:
-pwd_context = CryptContext(
-    # Replace this list with the hash(es) you wish to support.
-    # The first hash will be the default
-    schemes=["pbkdf2_sha256"]
-    # Optionally, set the number of rounds that should be used.
-    # Leaving this alone is usually safe, and will use passlib's defaults.
-    ## pbkdf2_sha256__rounds = 29000,
-    )
-
-
 @auth.route('account/login', methods=['GET', 'POST'])
 def login():
     if session.get('logged_in') == True:
@@ -35,33 +24,22 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
-        password = form.password.data
         db = get_db()
-        cur = db.execute('select id, password, status from users \
+        cur = db.execute('select id, status from users \
             where email is ?', (email,))
         row = cur.fetchone()
-        if row is not None:
-            user_id = row[0]
-            db_password = row[1]
-            status = row[2]
-            if pwd_context.verify(password, db_password) is True:
-                current_user = row[0]
-                session['logged_in'] = True
-                session['current_user'] = current_user
-                session['status'] = status
-                if status == 'unconfirmed':
-                    flash(Markup('Please confirm your email address. </br>\
-                        Click <a href="%s">here</a> \
-                        if you need a new confirmation link.' % \
-                        (url_for('main.main_view'))))
-                return redirect(request.args.get('next') \
-                    or url_for('main.main_view'))
-            else:
-                flash('The email or password you entered were not found')
-                return redirect(url_for('auth.login'))
+        session['logged_in'] = True
+        session['current_user'] = row[0]
+        session['status'] = row[1]
+        if row[1] == 'unconfirmed':
+            flash(Markup('Please confirm your email address. </br>\
+                Click <a href="%s">here</a> \
+                if you need a new confirmation link.' % \
+                (url_for('auth.resend_confirmation'))))
+        if request.args.get('next'):
+            return redirect(request.args.get('next'))
         else:
-            flash('Sign up for an account first.')
-            return redirect(url_for('auth.register'))
+            return redirect(url_for('main.main_view'))
     return render_template('login.html', form=form)
 
 
@@ -71,8 +49,8 @@ def logout():
     session.pop('logged_in', None)
     session.pop('current_user', None)
     session.pop('status', None)
-    flash('You were logged out')
-    return redirect(url_for('auth.main_view'))
+    flash('You have been logged out.')
+    return redirect(url_for('main.main_view'))
 
 
 @auth.route('account/register', methods=['GET', 'POST'])
@@ -158,7 +136,7 @@ def resend_confirmation():
         email = row[0]
         send_email(email, 'Your new confirmation token',
                    'email/confirm', token=token)
-        flash('A new confirmation email has been sent to your address')
+        flash('A new confirmation email has been sent to your address.')
     return redirect(url_for('main.main_view'))
 
 

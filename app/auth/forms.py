@@ -30,17 +30,44 @@ def is_new_user(form, field):
 
 
 class RegistrationForm(Form):
-    email = StringField('Enter your email:', \
-        validators=[Required(), is_new_user, Length(1, 64), Email()])
-    password = PasswordField('Create a password:', \
+    email = StringField('Enter your email: (required)', \
+        validators=[Required(), is_new_user, Length(min=8), Email()])
+    password = PasswordField('Create a password: \
+        (min 8 char., must incl. a number and a special character)', \
         validators=[Required(), has_digits, has_special_char, Length(1, 64)])
     submit = SubmitField('Create account')
+
+
+class PasswordCorrect(object):
+    '''Verify email/password combo before validating form.'''
+    def __init__(self, fieldname):
+        self.fieldname = fieldname
+
+    def __call__(self, form, field):
+        try:
+            email = form[self.fieldname]
+        except KeyError:
+            raise ValidationError(field.gettext("Invalid field name '%s'.") \
+                % self.fieldname)
+        db = get_db()
+        cur = db.execute('select password from users \
+            where email is ?', (email.data,))
+        row = cur.fetchone()
+        if row is not None:
+            db_password = row[0]
+            if not pwd_context.verify(field.data, db_password):
+                raise ValidationError('The email or password you entered \
+                    were not found.')
+        else:
+            raise ValidationError('Could not log in—\
+                have you already registered?.')
 
 
 class LoginForm(Form):
     email = StringField('Email address:', \
         validators=[Required(), Length(1, 64), Email()])
-    password = PasswordField('Password:', validators=[Required()])
+    password = PasswordField('Password:', validators=[Required(), \
+        PasswordCorrect('email')])
     submit = SubmitField('Log in')
 
 
@@ -55,9 +82,10 @@ class NewEmailForm(Form):
 
 class ChangePasswordForm(Form):
     current_password = PasswordField('Your current password:', \
-        validators=[Required(), Length(1, 64)])
-    new_password = PasswordField('Your new password:', \
-        validators=[Required(), Length(1, 64), has_digits, \
+        validators=[Required()])
+    new_password = PasswordField('Your new password: \
+        (min 8 char., must incl. a number and a special character)', \
+        validators=[Required(), Length(min=8), has_digits, \
         has_special_char, EqualTo('verify_password', \
         message='New passwords must match.')])
     verify_password = PasswordField('Re-enter new password:', \
@@ -72,8 +100,9 @@ class RequestPasswordResetForm(Form):
 
 
 class SetNewPasswordForm(Form):
-    new_password = PasswordField('Your new password:', \
-        validators=[Required(), Length(1, 64), has_digits, has_special_char, \
+    new_password = PasswordField('Your new password: \
+        (min 8 char., must incl. a number and a special character)', \
+        validators=[Required(), Length(min=8), has_digits, has_special_char, \
         EqualTo('verify_password', \
         message='Passwords must match')])
     verify_password = PasswordField('Re-enter new password:', \
