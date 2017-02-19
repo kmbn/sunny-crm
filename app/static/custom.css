@@ -87,6 +87,14 @@ body {
     color: #383636;
     font-family: 'ff-meta-serif-sc-web-pro',Georgia,'EB Garamond', serif;
 }
+
+/* Extra small devices (phones, up to 480px) */
+@media screen and (max-width: 480px) {
+h1 { font-size: 5rem; }
+h2 { font-size: 2.5rem; }
+p  { font-size: 2rem; }
+}
+
 .icon-bar {
     background-color: #AAAAAA !important;
 }

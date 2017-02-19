@@ -8,7 +8,7 @@
 <div class="dashboard-block">
     <h2>Your agenda for today:
         {% if updates|length != 0 %}
-        <span class="h2-link"><a href="{{ url_for('main.view_next_checkins') }}">[view upcoming tasks]</a></span>
+        <span class="h2-link"><a href="{{ url_for('main.view_next_checkins') }}">[view&nbsp;upcoming&nbsp;tasks]</a></span>
         {% endif %}</h2>
     {% if agenda|length != 0 %}
     <ol>
@@ -35,7 +35,7 @@
 <div class="dashboard-block">
 {% if updates|length != 0 %}
     {% if updates|length > 1 %}
-        <h2>Your last {{ updates|length }} updates: <span class="h2-link"><a href="{{ url_for('main.view_update_stream') }}">[view all updates]</a></span></h2>
+        <h2>Your last {{ updates|length }} updates: <span class="h2-link"><a href="{{ url_for('main.view_update_stream') }}">[view&nbsp;all&nbsp;updates]</a></span></h2>
     {% else %}
         <h2>Your last update:</h2>
     {% endif %}
