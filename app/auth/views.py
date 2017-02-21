@@ -1,19 +1,18 @@
 import os
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, redirect, url_for, abort, \
-    render_template, flash, request, Markup
+    render_template, flash, request, Markup, Blueprint
 from datetime import datetime
-from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from . import auth, pwd_context
 from .forms import RegistrationForm, NewEmailForm, LoginForm, \
     ChangePasswordForm, RequestPasswordResetForm, SetNewPasswordForm
-from app.parse import *
 from app import app
-from . import auth
 from app.db import get_db
 from app.mail import send_email
-from app.main.views import main_view
 from app.decorators import login_required
+from app.main.views import main_view
+from .models import remove_user
 
 
 @auth.route('account/login', methods=['GET', 'POST'])
@@ -235,8 +234,8 @@ def request_password_reset():
             token = generate_confirmation_token(user_id)
             send_email(email, 'Link to reset your password',
                        'email/reset_password', token=token)
-            flash('A link to reset your password has been sent')
-            return redirect(url_for('main.main_view'))
+            flash('A link to reset your password has been sent.')
+            return redirect(url_for('auth.login'))
         else:
             flash('That email is not registered')
             return redirect(url_for('auth.request_password_reset'))
@@ -288,14 +287,7 @@ def delete_account():
         (current_user,))
     row = cur.fetchone()
     email = row[0]
-    db.execute('update users set email = ?, password = ? where id = ?', \
-        (None, None, current_user,))
-    db.execute('update contacts set name = ?, note = ?, \
-        last_checkin = ?, next_checkin = ? where creator_id = ?', \
-        (None, None, None, None, current_user,))
-    db.execute('update updates set description = ? \
-        where creator_id = ?', (None, current_user,))
-    db.commit()
+    remove_user(current_user)
     session['logged_in'] = False
     send_email(email, 'Your account has been deleted at your request',
         'email/account_deleted')

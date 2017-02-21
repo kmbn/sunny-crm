@@ -1,8 +1,7 @@
 import re
-from flask import session
+from flask import session, Markup, Blueprint
 from flask_wtf import Form
-from wtforms import PasswordField, StringField, SubmitField, TextAreaField, \
-    ValidationError
+from wtforms import StringField, PasswordField, SubmitField, ValidationError
 from wtforms.validators import Required, Length, Email, EqualTo
 from app.db import get_db
 from . import pwd_context
@@ -31,10 +30,10 @@ def is_new_user(form, field):
 
 class RegistrationForm(Form):
     email = StringField('Enter your email: (required)', \
-        validators=[Required(), is_new_user, Length(min=8), Email()])
+        validators=[Required(), is_new_user, Length(1, 64), Email()])
     password = PasswordField('Create a password: \
-        (min 8 char., must incl. a number and a special character)', \
-        validators=[Required(), has_digits, has_special_char, Length(1, 64)])
+        (minimum 8 characters, must include a number and a special character)', \
+        validators=[Required(), has_digits, has_special_char, Length(min=8)])
     submit = SubmitField('Create account')
 
 
@@ -84,7 +83,7 @@ class ChangePasswordForm(Form):
     current_password = PasswordField('Your current password:', \
         validators=[Required()])
     new_password = PasswordField('Your new password: \
-        (min 8 char., must incl. a number and a special character)', \
+        (minimum 8 characters, must include a number and a special character)', \
         validators=[Required(), Length(min=8), has_digits, \
         has_special_char, EqualTo('verify_password', \
         message='New passwords must match.')])
@@ -101,7 +100,7 @@ class RequestPasswordResetForm(Form):
 
 class SetNewPasswordForm(Form):
     new_password = PasswordField('Your new password: \
-        (min 8 char., must incl. a number and a special character)', \
+        (minimum 8 characters, must include a number and a special character)', \
         validators=[Required(), Length(min=8), has_digits, has_special_char, \
         EqualTo('verify_password', \
         message='Passwords must match')])
